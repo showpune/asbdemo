@@ -23,7 +23,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "started"
+      "status": "success",
+      "taskSummary": "Successfully upgraded Java from version 1.8 to version 21 (LTS). Updated maven.compiler.source and maven.compiler.target to 21, upgraded maven-compiler-plugin to 3.11.0, migrated from javax.* to jakarta.* APIs (servlet and websocket). All builds pass and tests succeed.",
+      "successCriteriaStatus": {
+        "passBuild": "pass",
+        "generateNewUnitTests": "not_required",
+        "generateNewIntegrationTests": "not_required",
+        "passUnitTests": "pass",
+        "passIntegrationTests": "not_required",
+        "securityComplianceCheck": "not_required"
+      }
     },
     {
       "type": "upgrade",
@@ -48,7 +57,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "pending"
+      "status": "success",
+      "taskSummary": "Successfully migrated from plain Jakarta EE web application to Spring Boot 3.4.2 with Spring Framework 6.2.2. Converted both demo (web) and democlient (CLI) modules to use Spring Boot starters. Migrated RabbitMQ integration to Spring AMQP and WebSocket to Spring WebSocket. All builds pass and tests succeed.",
+      "successCriteriaStatus": {
+        "passBuild": "pass",
+        "generateNewUnitTests": "not_required",
+        "generateNewIntegrationTests": "not_required",
+        "passUnitTests": "pass",
+        "passIntegrationTests": "not_required",
+        "securityComplianceCheck": "not_required"
+      }
     }
   ],
   "metadata": {
