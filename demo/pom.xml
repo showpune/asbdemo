@@ -15,15 +15,16 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <maven.compiler.release>21</maven.compiler.release>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.10.2</version>
       <scope>test</scope>
     </dependency>
     
@@ -31,22 +32,30 @@
     <dependency>
       <groupId>com.rabbitmq</groupId>
       <artifactId>amqp-client</artifactId>
-      <version>5.16.0</version>
+      <version>5.21.0</version>
     </dependency>
     
-    <!-- WebSocket API -->
+    <!-- WebSocket API - Jakarta namespace -->
     <dependency>
-      <groupId>javax.websocket</groupId>
-      <artifactId>javax.websocket-api</artifactId>
-      <version>1.1</version>
+      <groupId>jakarta.websocket</groupId>
+      <artifactId>jakarta.websocket-api</artifactId>
+      <version>2.1.1</version>
       <scope>provided</scope>
     </dependency>
     
-    <!-- Servlet API -->
+    <!-- Jetty WebSocket implementation for Jakarta -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
+      <groupId>org.eclipse.jetty.ee10.websocket</groupId>
+      <artifactId>jetty-ee10-websocket-jakarta-server</artifactId>
+      <version>12.0.15</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <!-- Servlet API - Jakarta namespace -->
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
       <scope>provided</scope>
     </dependency>
     
@@ -54,7 +63,7 @@
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>2.8.9</version>
+      <version>2.10.1</version>
     </dependency>
   </dependencies>
 
@@ -73,11 +82,11 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.13.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
+          <version>3.2.5</version>
         </plugin>
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
@@ -95,9 +104,9 @@
     </pluginManagement>
     <plugins>
       <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-        <version>9.4.48.v20220622</version>
+        <groupId>org.eclipse.jetty.ee10</groupId>
+        <artifactId>jetty-ee10-maven-plugin</artifactId>
+        <version>12.0.15</version>
         <configuration>
           <httpConnector>
             <port>8080</port>
@@ -105,7 +114,7 @@
           <webApp>
             <contextPath>/demo</contextPath>
           </webApp>
-          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <scan>10</scan>
         </configuration>
       </plugin>
     </plugins>

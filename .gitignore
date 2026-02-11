@@ -1,0 +1,16 @@
+# Maven build artifacts
+target/
+*.class
+*.jar
+*.war
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+.settings/
+.project
+.classpath
+
+# Logs
+*.log

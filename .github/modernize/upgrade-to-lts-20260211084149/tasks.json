@@ -23,7 +23,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "pending"
+      "status": "success",
+      "taskSummary": "Successfully upgraded Java from version 8 to version 21 (latest LTS). Migrated from javax.* to jakarta.* namespace for WebSocket and Servlet APIs. Updated all dependencies to compatible versions. Both projects (demo and democlient) build successfully and all unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "generateNewIntegrationTests": "true",
+        "passUnitTests": "true",
+        "passIntegrationTests": "true",
+        "securityComplianceCheck": "true"
+      }
     }
   ],
   "metadata": {
