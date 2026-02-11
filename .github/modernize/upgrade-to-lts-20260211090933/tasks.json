@@ -23,7 +23,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "started"
+      "status": "success",
+      "taskSummary": "Successfully upgraded Java from version 1.8 to 21 (LTS). Updated build configurations in demo/pom.xml and democlient/pom.xml with Java 21 compiler settings. Upgraded maven-compiler-plugin to 3.11.0 and maven-surefire-plugin to 3.0.0. Both projects compile successfully and all unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      }
     },
     {
       "type": "upgrade",
