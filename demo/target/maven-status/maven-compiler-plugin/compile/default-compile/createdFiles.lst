@@ -1,5 +1,0 @@
-com/example/config/RabbitMQConfig.class
-com/example/rabbitmq/RabbitMQConsumer.class
-com/example/config/WebSocketConfig.class
-com/example/websocket/NewsWebSocketHandler.class
-com/example/DemoApplication.class
