@@ -2,22 +2,22 @@ package com.example.rabbitmq;
 
 import com.rabbitmq.client.*;
 import com.example.websocket.NewsWebSocket;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-@WebListener
-public class RabbitMQConsumer implements ServletContextListener {
+@Component
+public class RabbitMQConsumer {
     
     private static final String RABBITMQ_HOST = "localhost";
     private static final String QUEUE_NAME = "news";
     private Connection connection;
     private Channel channel;
     
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
+    @PostConstruct
+    public void initialize() {
         System.out.println("========================================");
         System.out.println("RabbitMQConsumer: Starting initialization...");
         System.out.println("========================================");
@@ -71,8 +71,8 @@ public class RabbitMQConsumer implements ServletContextListener {
         }
     }
     
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {
+    @PreDestroy
+    public void cleanup() {
         try {
             if (channel != null && channel.isOpen()) {
                 channel.close();
