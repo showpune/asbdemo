@@ -1,0 +1,252 @@
+{
+  "assessmentInfo": {
+    "assessmentToolName": "AppCAT",
+    "assessmentToolVersion": "1.0.0",
+    "dateOfAssessment": "2026-02-11T05:35:35Z",
+    "source": "/home/runner/work/asbdemo/asbdemo",
+    "privacyMode": "Protected"
+  },
+  "repositoryInfo": {
+    "name": "asbdemo",
+    "owner": "showpune",
+    "url": "https://github.com/showpune/asbdemo"
+  },
+  "summary": {
+    "totalIncidents": 8,
+    "criticalIncidents": 2,
+    "highIncidents": 3,
+    "mediumIncidents": 2,
+    "lowIncidents": 1,
+    "informationalIncidents": 0
+  },
+  "applications": [
+    {
+      "name": "demo",
+      "type": "Maven WAR",
+      "language": "Java",
+      "framework": "Java EE",
+      "targetFramework": "1.8",
+      "issues": [
+        {
+          "category": "Configuration Management",
+          "severity": "High",
+          "issue": "Hardcoded RabbitMQ connection settings",
+          "description": "RabbitMQ host, queue names, and port numbers are hardcoded in source files. This makes it difficult to deploy to different environments without code changes.",
+          "remediation": "Externalize configuration to application.properties or environment variables. Consider using Spring configuration or Azure App Configuration.",
+          "affectedFiles": [
+            "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java:14-15"
+          ],
+          "ruleId": "hardcoded-configuration",
+          "effort": "Medium"
+        },
+        {
+          "category": "Cloud Readiness",
+          "severity": "Critical",
+          "issue": "RabbitMQ dependency requires migration to Azure Service Bus",
+          "description": "Application uses RabbitMQ for messaging. For Azure deployment, this should be migrated to Azure Service Bus or containerized RabbitMQ on AKS.",
+          "remediation": "Migrate to Azure Service Bus for managed messaging, or deploy RabbitMQ on Azure Kubernetes Service (AKS).",
+          "affectedFiles": [
+            "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+            "demo/pom.xml:30-35"
+          ],
+          "ruleId": "rabbitmq-azure-migration",
+          "effort": "High"
+        },
+        {
+          "category": "Application Server",
+          "severity": "Medium",
+          "issue": "Jetty embedded server requires containerization strategy",
+          "description": "Application uses Jetty Maven plugin for local development. For Azure deployment, consider containerizing with Docker or deploying to Azure App Service.",
+          "remediation": "Create Dockerfile for containerized deployment to Azure App Service or AKS. Alternatively, package as standard WAR for Azure App Service.",
+          "affectedFiles": [
+            "demo/pom.xml:98-110"
+          ],
+          "ruleId": "jetty-azure-deployment",
+          "effort": "Medium"
+        },
+        {
+          "category": "WebSocket Support",
+          "severity": "High",
+          "issue": "WebSocket support in Azure App Service",
+          "description": "Application uses WebSocket for real-time communication. Azure App Service requires specific configuration to support WebSocket connections.",
+          "remediation": "Enable WebSocket support in Azure App Service configuration. Consider using Azure SignalR Service for better scalability.",
+          "affectedFiles": [
+            "demo/src/main/java/com/example/websocket/NewsWebSocket.java"
+          ],
+          "ruleId": "websocket-azure-config",
+          "effort": "Low"
+        }
+      ]
+    },
+    {
+      "name": "democlient",
+      "type": "Maven JAR",
+      "language": "Java",
+      "framework": "Java SE",
+      "targetFramework": "1.8",
+      "issues": [
+        {
+          "category": "Configuration Management",
+          "severity": "High",
+          "issue": "Hardcoded RabbitMQ connection settings",
+          "description": "RabbitMQ host and queue name are hardcoded. This makes it difficult to connect to different RabbitMQ instances in different environments.",
+          "remediation": "Use environment variables or configuration files for connection settings.",
+          "affectedFiles": [
+            "democlient/src/main/java/com/example/App.java:17-18"
+          ],
+          "ruleId": "hardcoded-configuration",
+          "effort": "Low"
+        },
+        {
+          "category": "Cloud Readiness",
+          "severity": "Critical",
+          "issue": "RabbitMQ client needs Azure Service Bus migration",
+          "description": "Client application connects to RabbitMQ. For Azure deployment, migrate to Azure Service Bus SDK.",
+          "remediation": "Replace RabbitMQ AMQP client with Azure Service Bus Java SDK. Update connection logic to use Azure Service Bus connection strings.",
+          "affectedFiles": [
+            "democlient/src/main/java/com/example/App.java",
+            "democlient/pom.xml:29-34"
+          ],
+          "ruleId": "rabbitmq-client-azure-migration",
+          "effort": "High"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "com.rabbitmq:amqp-client",
+      "version": "5.16.0",
+      "type": "Maven",
+      "cloudReadiness": "Migration Required",
+      "recommendation": "Migrate to Azure Service Bus Java SDK (com.azure:azure-messaging-servicebus)"
+    },
+    {
+      "name": "javax.websocket:javax.websocket-api",
+      "version": "1.1",
+      "type": "Maven",
+      "cloudReadiness": "Supported",
+      "recommendation": "Consider Azure SignalR Service for better scalability"
+    },
+    {
+      "name": "javax.servlet:javax.servlet-api",
+      "version": "3.1.0",
+      "type": "Maven",
+      "cloudReadiness": "Supported",
+      "recommendation": "Compatible with Azure App Service"
+    },
+    {
+      "name": "com.google.code.gson:gson",
+      "version": "2.8.9",
+      "type": "Maven",
+      "cloudReadiness": "Supported",
+      "recommendation": "No changes required"
+    },
+    {
+      "name": "org.eclipse.jetty:jetty-maven-plugin",
+      "version": "9.4.48.v20220622",
+      "type": "Maven",
+      "cloudReadiness": "Migration Required",
+      "recommendation": "Package as WAR for Azure App Service or containerize with Docker"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "High",
+      "category": "Messaging",
+      "recommendation": "Migrate from RabbitMQ to Azure Service Bus",
+      "rationale": "Azure Service Bus provides fully managed enterprise message broker with message queues and publish-subscribe topics. This eliminates the need to manage RabbitMQ infrastructure.",
+      "estimatedEffort": "High",
+      "steps": [
+        "1. Create Azure Service Bus namespace in Azure portal",
+        "2. Create queue or topic based on application needs",
+        "3. Replace amqp-client dependency with azure-messaging-servicebus",
+        "4. Update RabbitMQConsumer to use Service Bus Receiver",
+        "5. Update democlient to use Service Bus Sender",
+        "6. Test message flow end-to-end"
+      ]
+    },
+    {
+      "priority": "High",
+      "category": "Configuration",
+      "recommendation": "Externalize all configuration settings",
+      "rationale": "Hardcoded configuration prevents deployment flexibility and follows cloud anti-patterns. Azure provides multiple configuration management options.",
+      "estimatedEffort": "Medium",
+      "steps": [
+        "1. Create application.properties or use environment variables",
+        "2. Replace hardcoded values with configuration lookups",
+        "3. Set up Azure App Configuration or Key Vault for production",
+        "4. Update deployment scripts to inject configuration"
+      ]
+    },
+    {
+      "priority": "Medium",
+      "category": "Deployment",
+      "recommendation": "Containerize application for Azure deployment",
+      "rationale": "Containerization provides consistent deployment across environments and enables deployment to Azure App Service, AKS, or Azure Container Instances.",
+      "estimatedEffort": "Medium",
+      "steps": [
+        "1. Create Dockerfile for the demo WAR application",
+        "2. Use Tomcat or Jetty base image",
+        "3. Build and test container locally",
+        "4. Push to Azure Container Registry",
+        "5. Deploy to Azure App Service or AKS"
+      ]
+    },
+    {
+      "priority": "Medium",
+      "category": "Real-time Communication",
+      "recommendation": "Evaluate Azure SignalR Service for WebSocket",
+      "rationale": "Azure SignalR Service provides managed real-time messaging with automatic scaling and better performance for WebSocket connections.",
+      "estimatedEffort": "Medium",
+      "steps": [
+        "1. Create Azure SignalR Service instance",
+        "2. Evaluate migration effort from raw WebSocket to SignalR",
+        "3. Update client-side code to use SignalR JavaScript client",
+        "4. Update server-side code to use SignalR Java SDK"
+      ]
+    },
+    {
+      "priority": "Low",
+      "category": "Java Version",
+      "recommendation": "Consider upgrading from Java 1.8 to Java 11 or 17 LTS",
+      "rationale": "Java 8 is becoming dated. Azure fully supports Java 11 and 17 LTS versions with better performance and security features.",
+      "estimatedEffort": "Low to Medium",
+      "steps": [
+        "1. Update pom.xml compiler source and target versions",
+        "2. Test application with newer Java version",
+        "3. Address any compatibility issues",
+        "4. Update Azure App Service runtime configuration"
+      ]
+    }
+  ],
+  "azureServices": {
+    "recommended": [
+      {
+        "service": "Azure Service Bus",
+        "purpose": "Replace RabbitMQ with managed message broker",
+        "tier": "Standard or Premium"
+      },
+      {
+        "service": "Azure App Service",
+        "purpose": "Host Java web application",
+        "tier": "Standard or Premium (for WebSocket support)"
+      },
+      {
+        "service": "Azure Container Registry",
+        "purpose": "Store Docker images",
+        "tier": "Basic or Standard"
+      },
+      {
+        "service": "Azure App Configuration",
+        "purpose": "Centralized configuration management",
+        "tier": "Standard"
+      },
+      {
+        "service": "Azure SignalR Service",
+        "purpose": "Managed real-time messaging (optional)",
+        "tier": "Standard"
+      }
+    ]
+  }
+}
