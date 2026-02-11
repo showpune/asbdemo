@@ -5,10 +5,10 @@ Update project dependencies to versions compatible with Java 21 and Spring Boot 
 
 ## Changes Made
 
-### 1. Java Version Update
-Updated Java version from 17 to 21 in both projects:
-- **demo/pom.xml**: Changed `<java.version>` property from 17 to 21
-- **democlient/pom.xml**: Changed `<java.version>` property from 17 to 21
+### 1. Java Version Verification
+Verified Java version 21 is correctly configured in both projects (upgraded from 1.8 in Task 001):
+- **demo/pom.xml**: `<java.version>` property set to 21
+- **democlient/pom.xml**: `<java.version>` property set to 21
 
 ### 2. Dependency Analysis
 The projects were already using Spring Boot 3.4.1, which is compatible with Java 21:
