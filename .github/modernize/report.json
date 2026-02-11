@@ -1,0 +1,557 @@
+{
+  "assessmentInfo": {
+    "toolVersion": "AppCAT 7.0 (Manual Analysis)",
+    "assessmentDate": "2026-02-11T06:59:46.514Z",
+    "scanDuration": "Manual assessment",
+    "targetPlatform": "Azure",
+    "analysisMode": "comprehensive"
+  },
+  "repositoryInfo": {
+    "repositoryName": "asbdemo",
+    "owner": "showpune",
+    "url": "https://github.com/showpune/asbdemo",
+    "branch": "main",
+    "language": "Java",
+    "buildTool": "Maven"
+  },
+  "summary": {
+    "totalApplications": 2,
+    "totalFiles": 4,
+    "totalIssues": 8,
+    "issuesBySeverity": {
+      "critical": 0,
+      "high": 2,
+      "medium": 4,
+      "low": 2,
+      "informational": 0
+    },
+    "issuesByCategory": {
+      "configuration": 3,
+      "dependencies": 3,
+      "modernization": 2
+    }
+  },
+  "applications": [
+    {
+      "name": "demo",
+      "type": "WAR",
+      "packaging": "war",
+      "path": "./demo",
+      "javaVersion": "1.8",
+      "buildTool": "Maven",
+      "framework": "JavaEE",
+      "technologies": [
+        "RabbitMQ",
+        "WebSocket",
+        "Servlet API 3.1",
+        "Jetty 9.4"
+      ],
+      "files": [
+        "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+        "demo/src/main/java/com/example/websocket/NewsWebSocket.java"
+      ]
+    },
+    {
+      "name": "democlient",
+      "type": "JAR",
+      "packaging": "jar",
+      "path": "./democlient",
+      "javaVersion": "1.8",
+      "buildTool": "Maven",
+      "framework": "Standalone Java Application",
+      "technologies": [
+        "RabbitMQ Client 5.16.0"
+      ],
+      "files": [
+        "democlient/src/main/java/com/example/App.java"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "com.rabbitmq:amqp-client",
+      "version": "5.16.0",
+      "type": "runtime",
+      "scope": "compile",
+      "usedBy": ["demo", "democlient"],
+      "azureEquivalent": "Azure Service Bus",
+      "migrationComplexity": "medium"
+    },
+    {
+      "name": "javax.websocket:javax.websocket-api",
+      "version": "1.1",
+      "type": "provided",
+      "scope": "provided",
+      "usedBy": ["demo"],
+      "azureEquivalent": "Azure SignalR Service",
+      "migrationComplexity": "medium"
+    },
+    {
+      "name": "javax.servlet:javax.servlet-api",
+      "version": "3.1.0",
+      "type": "provided",
+      "scope": "provided",
+      "usedBy": ["demo"],
+      "azureEquivalent": "Azure App Service",
+      "migrationComplexity": "low"
+    },
+    {
+      "name": "com.google.code.gson:gson",
+      "version": "2.8.9",
+      "type": "runtime",
+      "scope": "compile",
+      "usedBy": ["demo"],
+      "azureEquivalent": "Compatible as-is",
+      "migrationComplexity": "none"
+    },
+    {
+      "name": "junit:junit",
+      "version": "4.11",
+      "type": "test",
+      "scope": "test",
+      "usedBy": ["demo", "democlient"],
+      "azureEquivalent": "Compatible as-is",
+      "migrationComplexity": "none"
+    },
+    {
+      "name": "org.eclipse.jetty:jetty-maven-plugin",
+      "version": "9.4.48.v20220622",
+      "type": "build",
+      "scope": "plugin",
+      "usedBy": ["demo"],
+      "azureEquivalent": "Azure App Service (managed runtime)",
+      "migrationComplexity": "low"
+    }
+  ],
+  "issues": [
+    {
+      "id": "HARDCODED-CONFIG-001",
+      "title": "Hardcoded RabbitMQ Host Configuration",
+      "severity": "high",
+      "category": "configuration",
+      "file": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+      "line": 14,
+      "code": "private static final String RABBITMQ_HOST = \"localhost\";",
+      "description": "RabbitMQ host is hardcoded to 'localhost'. This prevents deployment to cloud environments without code changes.",
+      "recommendation": "Externalize configuration to environment variables or configuration files. Use Azure App Configuration or Key Vault for cloud deployments.",
+      "effort": "low",
+      "codeSnippet": "private static final String RABBITMQ_HOST = \"localhost\";",
+      "suggestedFix": "Read from environment variable: System.getenv(\"RABBITMQ_HOST\") or use Spring configuration"
+    },
+    {
+      "id": "HARDCODED-CONFIG-002",
+      "title": "Hardcoded Queue Name",
+      "severity": "medium",
+      "category": "configuration",
+      "file": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+      "line": 15,
+      "code": "private static final String QUEUE_NAME = \"news\";",
+      "description": "Queue name is hardcoded. This limits flexibility and makes it difficult to use different queue names for different environments.",
+      "recommendation": "Externalize queue name to configuration. Consider using Azure Service Bus with Topics for more advanced routing.",
+      "effort": "low",
+      "codeSnippet": "private static final String QUEUE_NAME = \"news\";",
+      "suggestedFix": "Read from environment variable or configuration file"
+    },
+    {
+      "id": "HARDCODED-CONFIG-003",
+      "title": "Hardcoded RabbitMQ Host in Client",
+      "severity": "high",
+      "category": "configuration",
+      "file": "democlient/src/main/java/com/example/App.java",
+      "line": 17,
+      "code": "private static final String RABBITMQ_HOST = \"localhost\";",
+      "description": "RabbitMQ host is hardcoded in the client application, preventing cloud deployment.",
+      "recommendation": "Use environment variables or configuration files for host configuration.",
+      "effort": "low",
+      "codeSnippet": "private static final String RABBITMQ_HOST = \"localhost\";",
+      "suggestedFix": "String host = System.getenv().getOrDefault(\"RABBITMQ_HOST\", \"localhost\");"
+    },
+    {
+      "id": "JAVA-VERSION-001",
+      "title": "Outdated Java Version",
+      "severity": "medium",
+      "category": "modernization",
+      "file": "demo/pom.xml",
+      "line": 18,
+      "code": "<maven.compiler.source>1.8</maven.compiler.source>",
+      "description": "Project uses Java 1.8 which is outdated. Consider upgrading to Java 11, 17, or 21 LTS versions for better performance, security, and Azure compatibility.",
+      "recommendation": "Upgrade to Java 17 or Java 21 (LTS versions) for improved performance and security. Azure App Service fully supports these versions.",
+      "effort": "medium",
+      "codeSnippet": "<maven.compiler.source>1.8</maven.compiler.source>",
+      "suggestedFix": "Update to Java 17: <maven.compiler.source>17</maven.compiler.source>"
+    },
+    {
+      "id": "JAVA-VERSION-002",
+      "title": "Outdated Java Version in Client",
+      "severity": "medium",
+      "category": "modernization",
+      "file": "democlient/pom.xml",
+      "line": 17,
+      "code": "<maven.compiler.source>1.8</maven.compiler.source>",
+      "description": "Client project uses Java 1.8. Upgrade recommended for better Azure integration.",
+      "recommendation": "Upgrade to Java 17 or Java 21 LTS for better performance and long-term support.",
+      "effort": "medium",
+      "codeSnippet": "<maven.compiler.source>1.8</maven.compiler.source>",
+      "suggestedFix": "Update to Java 17: <maven.compiler.source>17</maven.compiler.source>"
+    },
+    {
+      "id": "DEP-OUTDATED-001",
+      "title": "Outdated Gson Version",
+      "severity": "low",
+      "category": "dependencies",
+      "file": "demo/pom.xml",
+      "line": 57,
+      "code": "<version>2.8.9</version>",
+      "description": "Gson version 2.8.9 is outdated. Latest version has security fixes and improvements.",
+      "recommendation": "Update to Gson 2.10.1 or later for security patches and performance improvements.",
+      "effort": "low",
+      "codeSnippet": "<version>2.8.9</version>",
+      "suggestedFix": "<version>2.10.1</version>"
+    },
+    {
+      "id": "DEP-OUTDATED-002",
+      "title": "Outdated JUnit Version",
+      "severity": "low",
+      "category": "dependencies",
+      "file": "demo/pom.xml",
+      "line": 26,
+      "code": "<version>4.11</version>",
+      "description": "JUnit 4.11 is very outdated. Consider upgrading to JUnit 5 for modern testing features.",
+      "recommendation": "Upgrade to JUnit 5 (Jupiter) for improved test capabilities and better IDE integration.",
+      "effort": "medium",
+      "codeSnippet": "<version>4.11</version>",
+      "suggestedFix": "Migrate to JUnit 5: org.junit.jupiter:junit-jupiter:5.10.0"
+    },
+    {
+      "id": "AZURE-MESSAGING-001",
+      "title": "RabbitMQ Can Be Replaced with Azure Service Bus",
+      "severity": "medium",
+      "category": "azure-migration",
+      "file": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+      "line": 3,
+      "code": "import com.rabbitmq.client.*;",
+      "description": "Application uses RabbitMQ for messaging. Azure Service Bus provides a fully managed alternative with better cloud integration.",
+      "recommendation": "Consider migrating to Azure Service Bus for a fully managed messaging service with enterprise features. Azure Service Bus supports AMQP protocol and offers queues, topics, and advanced routing.",
+      "effort": "medium",
+      "codeSnippet": "import com.rabbitmq.client.*;",
+      "suggestedFix": "Replace with Azure Service Bus SDK: com.azure:azure-messaging-servicebus"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "high",
+      "category": "Configuration Management",
+      "title": "Externalize All Configuration",
+      "description": "Move all hardcoded configuration values (RabbitMQ host, queue names, ports) to external configuration sources.",
+      "benefits": [
+        "Enables deployment to multiple environments without code changes",
+        "Improves security by separating secrets from code",
+        "Facilitates cloud deployment",
+        "Simplifies configuration management"
+      ],
+      "steps": [
+        "Create application.properties or application.yml configuration file",
+        "Use environment variables for sensitive values",
+        "Consider Azure App Configuration for centralized configuration",
+        "Use Azure Key Vault for secrets management"
+      ],
+      "effort": "low",
+      "impact": "high"
+    },
+    {
+      "priority": "high",
+      "category": "Azure Migration",
+      "title": "Migrate to Azure Messaging Services",
+      "description": "Replace RabbitMQ with Azure Service Bus for a fully managed, scalable messaging solution.",
+      "benefits": [
+        "Eliminates need to manage RabbitMQ infrastructure",
+        "Better integration with Azure services",
+        "Built-in high availability and disaster recovery",
+        "Enterprise-grade security and compliance",
+        "Auto-scaling capabilities"
+      ],
+      "steps": [
+        "Create Azure Service Bus namespace",
+        "Create queues and topics as needed",
+        "Update application to use Azure Service Bus SDK",
+        "Migrate message producers and consumers",
+        "Test thoroughly before production deployment"
+      ],
+      "effort": "medium",
+      "impact": "high"
+    },
+    {
+      "priority": "medium",
+      "category": "Real-time Communication",
+      "title": "Consider Azure SignalR Service for WebSocket",
+      "description": "Replace custom WebSocket implementation with Azure SignalR Service for better scalability.",
+      "benefits": [
+        "Automatic scaling of WebSocket connections",
+        "No need to manage WebSocket infrastructure",
+        "Built-in backplane for multi-instance deployments",
+        "Reduced code complexity"
+      ],
+      "steps": [
+        "Create Azure SignalR Service resource",
+        "Integrate SignalR client library",
+        "Update application to use SignalR hubs",
+        "Configure connection management"
+      ],
+      "effort": "medium",
+      "impact": "medium"
+    },
+    {
+      "priority": "medium",
+      "category": "Platform Upgrade",
+      "title": "Upgrade to Java 17 or 21 LTS",
+      "description": "Upgrade from Java 8 to a current LTS version for improved performance, security, and support.",
+      "benefits": [
+        "Better performance and memory efficiency",
+        "Latest security patches and features",
+        "Long-term support from Oracle and Azure",
+        "Access to modern Java language features",
+        "Better Azure integration and tooling"
+      ],
+      "steps": [
+        "Update pom.xml compiler settings to Java 17 or 21",
+        "Test application compatibility",
+        "Update dependencies if needed",
+        "Update CI/CD pipelines",
+        "Update Azure App Service runtime configuration"
+      ],
+      "effort": "low-medium",
+      "impact": "medium"
+    },
+    {
+      "priority": "low",
+      "category": "Dependencies",
+      "title": "Update Dependencies to Latest Stable Versions",
+      "description": "Update Gson, JUnit, and other dependencies to latest stable versions.",
+      "benefits": [
+        "Security patches and bug fixes",
+        "Performance improvements",
+        "Better compatibility with modern tools",
+        "Access to new features"
+      ],
+      "steps": [
+        "Review current dependency versions",
+        "Check for known vulnerabilities",
+        "Update to latest stable versions",
+        "Run tests to ensure compatibility"
+      ],
+      "effort": "low",
+      "impact": "low"
+    }
+  ],
+  "azureServices": {
+    "recommended": [
+      {
+        "service": "Azure App Service",
+        "purpose": "Host Java web application (WAR)",
+        "tier": "Basic B1 or higher",
+        "reasoning": "Fully managed platform for hosting Java applications with built-in scaling, monitoring, and CI/CD integration",
+        "configuration": {
+          "runtime": "Java 17 (Tomcat 10 or higher)",
+          "os": "Linux",
+          "features": [
+            "Auto-scaling",
+            "Application Insights integration",
+            "Deployment slots for staging",
+            "Custom domain and SSL"
+          ]
+        }
+      },
+      {
+        "service": "Azure Service Bus",
+        "purpose": "Replace RabbitMQ messaging",
+        "tier": "Standard or Premium",
+        "reasoning": "Fully managed enterprise messaging service with high reliability, security, and Azure integration",
+        "configuration": {
+          "namespace": "asbdemo-servicebus",
+          "queues": ["news"],
+          "features": [
+            "AMQP protocol support",
+            "Dead-letter queues",
+            "Message sessions",
+            "Duplicate detection"
+          ]
+        }
+      },
+      {
+        "service": "Azure SignalR Service",
+        "purpose": "Replace custom WebSocket implementation",
+        "tier": "Standard",
+        "reasoning": "Managed real-time messaging service with automatic scaling and backplane support",
+        "configuration": {
+          "units": "1 (auto-scale enabled)",
+          "serviceMode": "Default",
+          "features": [
+            "Automatic connection management",
+            "Multi-instance support",
+            "Built-in authentication"
+          ]
+        }
+      },
+      {
+        "service": "Azure Container Registry",
+        "purpose": "Store Docker images",
+        "tier": "Basic",
+        "reasoning": "Store and manage container images for deployment",
+        "configuration": {
+          "sku": "Basic",
+          "features": [
+            "Geo-replication (if Premium tier)",
+            "Webhook integration",
+            "Azure AD authentication"
+          ]
+        }
+      },
+      {
+        "service": "Azure Key Vault",
+        "purpose": "Manage secrets and configuration",
+        "tier": "Standard",
+        "reasoning": "Securely store connection strings, API keys, and other sensitive configuration",
+        "configuration": {
+          "secrets": [
+            "ServiceBusConnectionString",
+            "SignalRConnectionString",
+            "DatabaseConnectionString"
+          ]
+        }
+      },
+      {
+        "service": "Azure Application Insights",
+        "purpose": "Application monitoring and diagnostics",
+        "tier": "Pay-as-you-go",
+        "reasoning": "Monitor application performance, detect issues, and track usage",
+        "configuration": {
+          "features": [
+            "Application performance monitoring",
+            "Log analytics",
+            "Custom metrics and events",
+            "Availability tests"
+          ]
+        }
+      }
+    ],
+    "optional": [
+      {
+        "service": "Azure Container Apps",
+        "purpose": "Alternative to App Service for containerized deployment",
+        "reasoning": "Microservices-focused platform with built-in scaling and Dapr integration"
+      },
+      {
+        "service": "Azure Redis Cache",
+        "purpose": "Session state and caching",
+        "reasoning": "Improve application performance with distributed caching"
+      },
+      {
+        "service": "Azure API Management",
+        "purpose": "API gateway and management",
+        "reasoning": "If exposing APIs to external consumers"
+      }
+    ]
+  },
+  "migrationStrategies": [
+    {
+      "name": "Lift and Shift",
+      "effort": "low",
+      "timeline": "1-2 weeks",
+      "approach": "Minimal changes, deploy to Azure App Service with existing architecture",
+      "steps": [
+        "Externalize configuration to environment variables",
+        "Deploy RabbitMQ as container or use managed service",
+        "Deploy WAR to Azure App Service",
+        "Update client to connect to Azure-hosted services"
+      ],
+      "pros": [
+        "Fastest migration path",
+        "Minimal code changes",
+        "Lower initial risk"
+      ],
+      "cons": [
+        "Doesn't leverage Azure-native services",
+        "Still managing RabbitMQ infrastructure",
+        "Limited scalability improvements"
+      ]
+    },
+    {
+      "name": "Refactor for Azure",
+      "effort": "medium",
+      "timeline": "3-4 weeks",
+      "approach": "Modernize application to use Azure-native services",
+      "steps": [
+        "Replace RabbitMQ with Azure Service Bus",
+        "Replace WebSocket with Azure SignalR Service",
+        "Externalize all configuration to Azure App Configuration",
+        "Store secrets in Azure Key Vault",
+        "Upgrade to Java 17",
+        "Deploy to Azure App Service with Application Insights",
+        "Implement CI/CD pipeline with Azure DevOps or GitHub Actions"
+      ],
+      "pros": [
+        "Better scalability and reliability",
+        "Reduced operational overhead",
+        "Improved Azure integration",
+        "Modern, cloud-native architecture"
+      ],
+      "cons": [
+        "Requires more development time",
+        "Need to refactor messaging code",
+        "Team needs to learn Azure services"
+      ],
+      "recommended": true
+    },
+    {
+      "name": "Containerize and Deploy",
+      "effort": "medium",
+      "timeline": "2-3 weeks",
+      "approach": "Containerize applications and deploy to Azure Container Apps or AKS",
+      "steps": [
+        "Create Dockerfiles for applications",
+        "Set up Azure Container Registry",
+        "Deploy to Azure Container Apps or AKS",
+        "Configure service communication",
+        "Implement monitoring and logging"
+      ],
+      "pros": [
+        "Portable across environments",
+        "Consistent deployment",
+        "Good for microservices evolution",
+        "Flexible scaling options"
+      ],
+      "cons": [
+        "Requires container expertise",
+        "More complex infrastructure",
+        "Higher learning curve"
+      ]
+    }
+  ],
+  "estimatedCosts": {
+    "monthly": {
+      "minimum": {
+        "appService": "$13 (B1 Basic tier)",
+        "servicebus": "$10 (Standard tier base)",
+        "signalr": "$50 (Standard tier, 1 unit)",
+        "keyVault": "$0 (pay per operation)",
+        "insights": "$0-5 (based on usage)",
+        "total": "$73-78 per month"
+      },
+      "recommended": {
+        "appService": "$55 (S1 Standard tier)",
+        "servicebus": "$10 (Standard tier base) + usage",
+        "signalr": "$50 (Standard tier, 1 unit)",
+        "keyVault": "$0-1",
+        "insights": "$5-20 (based on usage)",
+        "containerRegistry": "$5 (Basic tier)",
+        "total": "$125-141 per month"
+      }
+    },
+    "notes": [
+      "Costs are estimates and may vary based on region and usage",
+      "Service Bus charges include base + per-million-operations",
+      "Application Insights costs scale with data volume",
+      "Consider Reserved Instances for production workloads to save costs"
+    ]
+  }
+}
