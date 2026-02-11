@@ -1,38 +1,41 @@
 package com.example.websocket;
 
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@ServerEndpoint("/news-websocket")
-public class NewsWebSocket {
+@Component
+public class NewsWebSocket extends TextWebSocketHandler {
     
-    private static Set<Session> sessions = Collections.synchronizedSet(new HashSet<>());
+    private static Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
     
-    @OnOpen
-    public void onOpen(Session session) {
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.add(session);
         System.out.println("WebSocket opened: " + session.getId());
     }
     
-    @OnClose
-    public void onClose(Session session) {
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session);
         System.out.println("WebSocket closed: " + session.getId());
     }
     
-    @OnError
-    public void onError(Session session, Throwable throwable) {
-        System.err.println("WebSocket error: " + throwable.getMessage());
-        throwable.printStackTrace();
+    @Override
+    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+        System.err.println("WebSocket error: " + exception.getMessage());
+        exception.printStackTrace();
     }
     
-    @OnMessage
-    public void onMessage(String message, Session session) {
-        System.out.println("Received message from client: " + message);
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        System.out.println("Received message from client: " + message.getPayload());
     }
     
     /**
@@ -40,10 +43,10 @@ public class NewsWebSocket {
      */
     public static void broadcast(String message) {
         synchronized (sessions) {
-            for (Session session : sessions) {
+            for (WebSocketSession session : sessions) {
                 if (session.isOpen()) {
                     try {
-                        session.getBasicRemote().sendText(message);
+                        session.sendMessage(new TextMessage(message));
                     } catch (IOException e) {
                         e.printStackTrace();
                         System.err.println("Error sending message to session " + session.getId());
