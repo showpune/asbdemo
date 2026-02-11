@@ -19,6 +19,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(newsWebSocketHandler, "/news-websocket")
-                .setAllowedOrigins("*");
+                .setAllowedOriginPatterns("*");  // Consider restricting to specific origins in production
     }
 }

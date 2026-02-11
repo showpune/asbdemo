@@ -24,7 +24,7 @@
         "securityComplianceCheck": "false"
       },
       "status": "success",
-      "summary": "Successfully upgraded Java from 1.8 to 21. Updated build configurations in demo/pom.xml and democlient/pom.xml. Both projects build successfully and all tests pass.",
+      "summary": "Successfully upgraded Java from 1.8 to 17 (LTS). Updated build configurations in demo/pom.xml and democlient/pom.xml. Both projects build successfully and all tests pass. Note: Java 17 LTS was used as it was the available version in the environment.",
       "successCriteriaStatus": {
         "passBuild": true,
         "generateNewUnitTests": false,
