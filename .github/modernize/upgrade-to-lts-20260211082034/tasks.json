@@ -23,7 +23,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "started"
+      "status": "success",
+      "summary": "Successfully upgraded Java from 1.8 to 21. Updated build configurations in demo/pom.xml and democlient/pom.xml. Both projects build successfully and all tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": true,
+        "generateNewUnitTests": false,
+        "generateNewIntegrationTests": false,
+        "passUnitTests": true,
+        "passIntegrationTests": false,
+        "securityComplianceCheck": false
+      }
     },
     {
       "type": "upgrade",
@@ -48,7 +57,7 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "pending"
+      "status": "started"
     }
   ],
   "metadata": {
