@@ -48,7 +48,8 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "started"
+      "status": "skipped",
+      "taskSummary": "Task skipped because the project does not use Spring Boot. The project is a standalone Java EE application using RabbitMQ, WebSocket, and Servlet APIs. Java has already been upgraded to version 21 in Task 001, which satisfies the core modernization requirement."
     }
   ],
   "metadata": {
