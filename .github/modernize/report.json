@@ -1,0 +1,742 @@
+{
+  "assessmentInfo": {
+    "assessmentDate": "2026-02-12T03:45:40.016Z",
+    "toolVersion": "AppCAT v1.0.0",
+    "assessmentType": "cloud-readiness",
+    "targetPlatform": "Azure"
+  },
+  "repositoryInfo": {
+    "name": "asbdemo",
+    "owner": "showpune",
+    "url": "https://github.com/showpune/asbdemo",
+    "primaryLanguage": "Java",
+    "applicationCount": 2
+  },
+  "summary": {
+    "totalIssues": 12,
+    "criticalIssues": 2,
+    "highIssues": 4,
+    "mediumIssues": 4,
+    "lowIssues": 2,
+    "informationalIssues": 0,
+    "totalDependencies": 7,
+    "outdatedDependencies": 5,
+    "vulnerableDependencies": 1
+  },
+  "applications": [
+    {
+      "name": "demo",
+      "path": "demo",
+      "type": "maven-war",
+      "packaging": "war",
+      "language": "Java",
+      "javaVersion": "1.8",
+      "framework": "Java EE",
+      "buildTool": "Maven",
+      "webContainer": "Jetty",
+      "description": "RabbitMQ News Feed - Web Application (WAR deployment with WebSocket support)",
+      "complexity": "medium",
+      "linesOfCode": 150,
+      "issueCount": 8
+    },
+    {
+      "name": "democlient",
+      "path": "democlient",
+      "type": "maven-jar",
+      "packaging": "jar",
+      "language": "Java",
+      "javaVersion": "1.8",
+      "framework": "Java SE",
+      "buildTool": "Maven",
+      "description": "RabbitMQ News Publisher Client (Standalone Java application)",
+      "complexity": "low",
+      "linesOfCode": 70,
+      "issueCount": 4
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "com.rabbitmq:amqp-client",
+      "version": "5.16.0",
+      "latestVersion": "5.21.0",
+      "scope": "compile",
+      "ecosystem": "maven",
+      "outdated": true,
+      "vulnerabilities": []
+    },
+    {
+      "name": "javax.websocket:javax.websocket-api",
+      "version": "1.1",
+      "latestVersion": "1.1",
+      "scope": "provided",
+      "ecosystem": "maven",
+      "outdated": false,
+      "vulnerabilities": [],
+      "migrationNote": "Consider migrating to jakarta.websocket-api for Jakarta EE compatibility"
+    },
+    {
+      "name": "javax.servlet:javax.servlet-api",
+      "version": "3.1.0",
+      "latestVersion": "4.0.1",
+      "scope": "provided",
+      "ecosystem": "maven",
+      "outdated": true,
+      "vulnerabilities": [],
+      "migrationNote": "Consider migrating to jakarta.servlet-api for Jakarta EE compatibility"
+    },
+    {
+      "name": "com.google.code.gson:gson",
+      "version": "2.8.9",
+      "latestVersion": "2.10.1",
+      "scope": "compile",
+      "ecosystem": "maven",
+      "outdated": true,
+      "vulnerabilities": []
+    },
+    {
+      "name": "junit:junit",
+      "version": "4.11",
+      "latestVersion": "4.13.2",
+      "scope": "test",
+      "ecosystem": "maven",
+      "outdated": true,
+      "vulnerabilities": [
+        {
+          "id": "CVE-2020-15250",
+          "severity": "medium",
+          "description": "JUnit 4 TemporaryFolder rule vulnerability",
+          "recommendation": "Upgrade to JUnit 4.13.1 or later, or migrate to JUnit 5"
+        }
+      ]
+    },
+    {
+      "name": "org.eclipse.jetty:jetty-maven-plugin",
+      "version": "9.4.48.v20220622",
+      "latestVersion": "11.0.20",
+      "scope": "plugin",
+      "ecosystem": "maven",
+      "outdated": true,
+      "vulnerabilities": []
+    },
+    {
+      "name": "maven-compiler-plugin",
+      "version": "3.8.0",
+      "latestVersion": "3.13.0",
+      "scope": "plugin",
+      "ecosystem": "maven",
+      "outdated": true,
+      "vulnerabilities": []
+    }
+  ],
+  "issues": [
+    {
+      "id": "JAVA-001",
+      "title": "Outdated Java Version",
+      "category": "platform",
+      "severity": "high",
+      "description": "Application is using Java 1.8, which has reached end of public updates. Consider upgrading to Java 17 LTS or Java 21 LTS.",
+      "effort": "medium",
+      "impactedFiles": [
+        "demo/pom.xml",
+        "democlient/pom.xml"
+      ],
+      "locations": [
+        {
+          "file": "demo/pom.xml",
+          "line": 18,
+          "snippet": "<maven.compiler.source>1.8</maven.compiler.source>"
+        },
+        {
+          "file": "democlient/pom.xml",
+          "line": 17,
+          "snippet": "<maven.compiler.source>1.8</maven.compiler.source>"
+        }
+      ],
+      "recommendation": "Upgrade to Java 17 LTS or Java 21 LTS for better performance, security, and long-term support"
+    },
+    {
+      "id": "CONFIG-001",
+      "title": "Hardcoded Configuration Values",
+      "category": "configuration",
+      "severity": "high",
+      "description": "RabbitMQ host, queue names, and connection parameters are hardcoded in source code. This reduces flexibility and makes environment-specific deployments difficult.",
+      "effort": "low",
+      "impactedFiles": [
+        "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+        "democlient/src/main/java/com/example/App.java"
+      ],
+      "locations": [
+        {
+          "file": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+          "line": 14,
+          "snippet": "private static final String RABBITMQ_HOST = \"localhost\";"
+        },
+        {
+          "file": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+          "line": 15,
+          "snippet": "private static final String QUEUE_NAME = \"news\";"
+        },
+        {
+          "file": "democlient/src/main/java/com/example/App.java",
+          "line": 17,
+          "snippet": "private static final String RABBITMQ_HOST = \"localhost\";"
+        },
+        {
+          "file": "democlient/src/main/java/com/example/App.java",
+          "line": 18,
+          "snippet": "private static final String QUEUE_NAME = \"news\";"
+        }
+      ],
+      "recommendation": "Externalize configuration using environment variables, property files, or Azure App Configuration service"
+    },
+    {
+      "id": "JAVAX-001",
+      "title": "Legacy javax.* Namespace Usage",
+      "category": "api",
+      "severity": "medium",
+      "description": "Application uses javax.* APIs which are being replaced by jakarta.* in newer Java EE/Jakarta EE versions.",
+      "effort": "medium",
+      "impactedFiles": [
+        "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+        "demo/src/main/java/com/example/websocket/NewsWebSocket.java"
+      ],
+      "locations": [
+        {
+          "file": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+          "line": 5,
+          "snippet": "import javax.servlet.ServletContextEvent;"
+        },
+        {
+          "file": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+          "line": 6,
+          "snippet": "import javax.servlet.ServletContextListener;"
+        },
+        {
+          "file": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+          "line": 7,
+          "snippet": "import javax.servlet.annotation.WebListener;"
+        },
+        {
+          "file": "demo/src/main/java/com/example/websocket/NewsWebSocket.java",
+          "line": 3,
+          "snippet": "import javax.websocket.*;"
+        },
+        {
+          "file": "demo/src/main/java/com/example/websocket/NewsWebSocket.java",
+          "line": 4,
+          "snippet": "import javax.websocket.server.ServerEndpoint;"
+        }
+      ],
+      "recommendation": "Consider migrating to Jakarta EE namespace (jakarta.*) for future compatibility, or use Spring Framework which handles this abstraction"
+    },
+    {
+      "id": "DEPLOY-001",
+      "title": "Traditional WAR Deployment Model",
+      "category": "deployment",
+      "severity": "medium",
+      "description": "Application uses traditional WAR packaging which requires an external servlet container. Modern cloud-native applications typically use embedded servers.",
+      "effort": "medium",
+      "impactedFiles": [
+        "demo/pom.xml"
+      ],
+      "locations": [
+        {
+          "file": "demo/pom.xml",
+          "line": 10,
+          "snippet": "<packaging>war</packaging>"
+        }
+      ],
+      "recommendation": "Consider migrating to Spring Boot with embedded server (Tomcat/Jetty) for easier cloud deployment and container support"
+    },
+    {
+      "id": "CLOUD-001",
+      "title": "Missing Cloud-Native Features",
+      "category": "cloud-readiness",
+      "severity": "medium",
+      "description": "Application lacks modern cloud-native features such as health checks, metrics, distributed tracing, and service discovery.",
+      "effort": "high",
+      "impactedFiles": [
+        "demo",
+        "democlient"
+      ],
+      "recommendation": "Add health check endpoints, implement Micrometer for metrics, configure structured logging, and consider Spring Boot Actuator for management endpoints"
+    },
+    {
+      "id": "SECURITY-001",
+      "title": "Missing Authentication/Authorization",
+      "category": "security",
+      "severity": "high",
+      "description": "WebSocket endpoint and RabbitMQ connections have no authentication or authorization mechanisms implemented.",
+      "effort": "high",
+      "impactedFiles": [
+        "demo/src/main/java/com/example/websocket/NewsWebSocket.java",
+        "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java"
+      ],
+      "locations": [
+        {
+          "file": "demo/src/main/java/com/example/websocket/NewsWebSocket.java",
+          "line": 10,
+          "snippet": "@ServerEndpoint(\"/news-websocket\")"
+        }
+      ],
+      "recommendation": "Implement authentication using Azure AD, OAuth2, or similar. Use Azure Service Bus or Azure Event Hubs with managed identity for secure messaging"
+    },
+    {
+      "id": "DEP-001",
+      "title": "Outdated Dependencies",
+      "category": "dependencies",
+      "severity": "medium",
+      "description": "Multiple dependencies are outdated and should be updated for security patches and new features.",
+      "effort": "low",
+      "impactedFiles": [
+        "demo/pom.xml",
+        "democlient/pom.xml"
+      ],
+      "recommendation": "Update all dependencies to latest stable versions. Consider using dependency management tools like Dependabot"
+    },
+    {
+      "id": "TEST-001",
+      "title": "Limited Test Coverage",
+      "category": "testing",
+      "severity": "low",
+      "description": "Application has minimal unit tests and no integration tests.",
+      "effort": "medium",
+      "impactedFiles": [
+        "demo",
+        "democlient"
+      ],
+      "recommendation": "Add comprehensive unit tests, integration tests, and consider contract testing for the message queue integration"
+    },
+    {
+      "id": "CONTAINER-001",
+      "title": "Missing Containerization",
+      "category": "deployment",
+      "severity": "low",
+      "description": "No Dockerfile or container configuration present. Containerization is essential for modern cloud deployment.",
+      "effort": "low",
+      "impactedFiles": [],
+      "recommendation": "Create Dockerfile for both applications, use multi-stage builds, and consider using Azure Container Registry"
+    },
+    {
+      "id": "RABBIT-001",
+      "title": "Direct RabbitMQ Client Usage",
+      "category": "messaging",
+      "severity": "high",
+      "description": "Application uses RabbitMQ client directly. For Azure deployment, consider Azure-native messaging services.",
+      "effort": "medium",
+      "impactedFiles": [
+        "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+        "democlient/src/main/java/com/example/App.java"
+      ],
+      "recommendation": "Consider migrating to Azure Service Bus or Azure Event Hubs for better cloud integration, or use Spring AMQP for abstraction"
+    },
+    {
+      "id": "ERROR-001",
+      "title": "Basic Error Handling",
+      "category": "reliability",
+      "severity": "medium",
+      "description": "Error handling is basic with printStackTrace() calls. Production applications need structured error handling and monitoring.",
+      "effort": "medium",
+      "impactedFiles": [
+        "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+        "demo/src/main/java/com/example/websocket/NewsWebSocket.java",
+        "democlient/src/main/java/com/example/App.java"
+      ],
+      "recommendation": "Implement structured logging with SLF4J/Logback, use Azure Application Insights for monitoring, add retry logic and circuit breakers"
+    },
+    {
+      "id": "VULN-001",
+      "title": "Vulnerable JUnit Version",
+      "category": "security",
+      "severity": "critical",
+      "description": "JUnit 4.11 has known security vulnerability CVE-2020-15250.",
+      "effort": "low",
+      "impactedFiles": [
+        "demo/pom.xml",
+        "democlient/pom.xml"
+      ],
+      "locations": [
+        {
+          "file": "demo/pom.xml",
+          "line": 25,
+          "snippet": "<version>4.11</version>"
+        },
+        {
+          "file": "democlient/pom.xml",
+          "line": 25,
+          "snippet": "<version>4.11</version>"
+        }
+      ],
+      "recommendation": "Upgrade to JUnit 4.13.2 or migrate to JUnit 5 (Jupiter)"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "high",
+      "category": "modernization",
+      "title": "Migrate to Spring Boot",
+      "description": "Convert the application to Spring Boot to leverage modern Java development practices, embedded servers, and extensive ecosystem support.",
+      "benefits": [
+        "Simplified deployment with embedded server",
+        "Auto-configuration and convention over configuration",
+        "Spring AMQP for RabbitMQ abstraction",
+        "Spring WebSocket for WebSocket support",
+        "Better Azure integration via Spring Cloud Azure",
+        "Production-ready features (health checks, metrics)",
+        "Active community and extensive documentation"
+      ],
+      "effort": "medium",
+      "estimatedDays": 5
+    },
+    {
+      "priority": "high",
+      "category": "security",
+      "title": "Upgrade Java Version",
+      "description": "Upgrade from Java 1.8 to Java 17 LTS or Java 21 LTS for improved performance, security patches, and modern language features.",
+      "benefits": [
+        "Extended security support",
+        "Performance improvements",
+        "Modern language features (records, pattern matching, etc.)",
+        "Better compatibility with modern frameworks",
+        "Improved garbage collection"
+      ],
+      "effort": "low",
+      "estimatedDays": 2
+    },
+    {
+      "priority": "high",
+      "category": "configuration",
+      "title": "Externalize Configuration",
+      "description": "Move hardcoded configuration values to external configuration files or Azure App Configuration.",
+      "benefits": [
+        "Environment-specific deployments",
+        "No code changes for config updates",
+        "Better security (no credentials in code)",
+        "Centralized configuration management",
+        "Support for feature flags"
+      ],
+      "effort": "low",
+      "estimatedDays": 1
+    },
+    {
+      "priority": "medium",
+      "category": "cloud-migration",
+      "title": "Adopt Azure-Native Services",
+      "description": "Replace RabbitMQ with Azure Service Bus or Azure Event Hubs for better cloud integration.",
+      "benefits": [
+        "Managed service (no infrastructure to maintain)",
+        "Built-in high availability and disaster recovery",
+        "Integration with Azure AD for security",
+        "Automatic scaling",
+        "Cost-effective pay-as-you-go pricing",
+        "Better monitoring via Azure Monitor"
+      ],
+      "effort": "medium",
+      "estimatedDays": 3
+    },
+    {
+      "priority": "medium",
+      "category": "deployment",
+      "title": "Containerize Application",
+      "description": "Create Docker containers for both applications and deploy to Azure Container Apps or Azure Kubernetes Service.",
+      "benefits": [
+        "Consistent deployment across environments",
+        "Easy scaling and updates",
+        "Better resource utilization",
+        "Integration with CI/CD pipelines",
+        "Support for blue-green deployments"
+      ],
+      "effort": "low",
+      "estimatedDays": 2
+    },
+    {
+      "priority": "medium",
+      "category": "observability",
+      "title": "Implement Monitoring and Observability",
+      "description": "Add Azure Application Insights, structured logging, and health check endpoints.",
+      "benefits": [
+        "Real-time application monitoring",
+        "Distributed tracing",
+        "Performance insights",
+        "Proactive alerting",
+        "Better debugging capabilities"
+      ],
+      "effort": "medium",
+      "estimatedDays": 3
+    },
+    {
+      "priority": "low",
+      "category": "testing",
+      "title": "Improve Test Coverage",
+      "description": "Add comprehensive unit tests, integration tests, and consider implementing contract testing.",
+      "benefits": [
+        "Higher code quality",
+        "Safer refactoring",
+        "Faster bug detection",
+        "Better documentation through tests",
+        "Reduced regression issues"
+      ],
+      "effort": "high",
+      "estimatedDays": 5
+    }
+  ],
+  "azureServices": {
+    "recommended": [
+      {
+        "service": "Azure App Service",
+        "purpose": "Host the web application",
+        "tier": "Standard S1 or higher",
+        "features": [
+          "Built-in CI/CD",
+          "Auto-scaling",
+          "Custom domains and SSL",
+          "Integration with Azure DevOps",
+          "Deployment slots for staging"
+        ],
+        "estimatedMonthlyCost": "$70-100"
+      },
+      {
+        "service": "Azure Service Bus",
+        "purpose": "Replace RabbitMQ for messaging",
+        "tier": "Standard or Premium",
+        "features": [
+          "Message queues and topics",
+          "Dead-letter queues",
+          "Message sessions",
+          "Duplicate detection",
+          "Geo-disaster recovery (Premium)"
+        ],
+        "estimatedMonthlyCost": "$10-650 (depending on tier)"
+      },
+      {
+        "service": "Azure Container Apps",
+        "purpose": "Alternative containerized deployment",
+        "tier": "Consumption",
+        "features": [
+          "Serverless containers",
+          "Automatic HTTPS",
+          "Built-in authentication",
+          "Multiple revisions",
+          "Scale to zero capability"
+        ],
+        "estimatedMonthlyCost": "$20-50"
+      },
+      {
+        "service": "Azure Application Insights",
+        "purpose": "Application performance monitoring",
+        "tier": "Pay-as-you-go",
+        "features": [
+          "Live metrics",
+          "Application map",
+          "Smart detection",
+          "Distributed tracing",
+          "Custom dashboards"
+        ],
+        "estimatedMonthlyCost": "$5-25"
+      },
+      {
+        "service": "Azure App Configuration",
+        "purpose": "Centralized configuration management",
+        "tier": "Standard",
+        "features": [
+          "Feature flags",
+          "Key-value pairs",
+          "Point-in-time snapshot",
+          "Encryption at rest",
+          "Integration with Key Vault"
+        ],
+        "estimatedMonthlyCost": "$1-5"
+      },
+      {
+        "service": "Azure Key Vault",
+        "purpose": "Secure secrets management",
+        "tier": "Standard",
+        "features": [
+          "Secrets management",
+          "Certificate management",
+          "Managed HSM support",
+          "Access policies",
+          "Audit logging"
+        ],
+        "estimatedMonthlyCost": "$0.03 per 10,000 operations"
+      },
+      {
+        "service": "Azure Container Registry",
+        "purpose": "Store Docker images",
+        "tier": "Basic",
+        "features": [
+          "Private Docker registry",
+          "Geo-replication (Premium)",
+          "Content trust",
+          "Vulnerability scanning",
+          "Webhooks"
+        ],
+        "estimatedMonthlyCost": "$5-20"
+      }
+    ],
+    "optional": [
+      {
+        "service": "Azure Kubernetes Service (AKS)",
+        "purpose": "Advanced container orchestration",
+        "tier": "Standard",
+        "features": [
+          "Full Kubernetes capabilities",
+          "Auto-scaling",
+          "Azure AD integration",
+          "Virtual nodes",
+          "Azure Monitor integration"
+        ],
+        "estimatedMonthlyCost": "$100-500+"
+      },
+      {
+        "service": "Azure Event Hubs",
+        "purpose": "Alternative to Service Bus for high-throughput scenarios",
+        "tier": "Standard",
+        "features": [
+          "Big data streaming",
+          "Kafka protocol support",
+          "Capture to storage",
+          "Auto-inflate",
+          "Geo-disaster recovery"
+        ],
+        "estimatedMonthlyCost": "$25-150"
+      },
+      {
+        "service": "Azure SignalR Service",
+        "purpose": "Managed WebSocket service",
+        "tier": "Standard",
+        "features": [
+          "Serverless WebSocket",
+          "Auto-scaling",
+          "Multiple hubs",
+          "Sticky sessions",
+          "Azure Functions integration"
+        ],
+        "estimatedMonthlyCost": "$50-200"
+      }
+    ]
+  },
+  "migrationStrategies": [
+    {
+      "name": "Lift and Shift",
+      "description": "Minimal changes - deploy existing WAR to Azure App Service for Tomcat",
+      "effort": "low",
+      "riskLevel": "low",
+      "duration": "1-2 weeks",
+      "steps": [
+        "Create Azure App Service with Tomcat runtime",
+        "Configure environment variables for RabbitMQ connection",
+        "Deploy WAR file to App Service",
+        "Set up Azure Service Bus or deploy RabbitMQ in Azure VM",
+        "Configure networking and security",
+        "Test and validate functionality"
+      ],
+      "pros": [
+        "Fastest migration path",
+        "Minimal code changes",
+        "Low risk",
+        "Quick time to value"
+      ],
+      "cons": [
+        "Doesn't leverage modern cloud-native features",
+        "May require external RabbitMQ or VM deployment",
+        "Limited scalability improvements",
+        "Higher operational overhead"
+      ]
+    },
+    {
+      "name": "Modernize and Migrate",
+      "description": "Refactor to Spring Boot and adopt Azure-native services",
+      "effort": "medium",
+      "riskLevel": "medium",
+      "duration": "3-4 weeks",
+      "steps": [
+        "Convert to Spring Boot application",
+        "Upgrade to Java 17 or 21 LTS",
+        "Replace RabbitMQ with Azure Service Bus",
+        "Migrate WebSocket to Spring WebSocket with SignalR option",
+        "Externalize configuration to Azure App Configuration",
+        "Add Azure Application Insights",
+        "Containerize with Docker",
+        "Deploy to Azure Container Apps or App Service",
+        "Implement CI/CD pipeline",
+        "Add health checks and monitoring"
+      ],
+      "pros": [
+        "Modern, cloud-native architecture",
+        "Better scalability and reliability",
+        "Easier maintenance",
+        "Reduced operational overhead with managed services",
+        "Better observability"
+      ],
+      "cons": [
+        "More upfront effort",
+        "Requires code refactoring",
+        "Team training on new technologies",
+        "Higher initial cost"
+      ]
+    },
+    {
+      "name": "Cloud-Native Transformation",
+      "description": "Complete rewrite using microservices and serverless architecture",
+      "effort": "high",
+      "riskLevel": "high",
+      "duration": "6-8 weeks",
+      "steps": [
+        "Design microservices architecture",
+        "Implement services using Spring Boot",
+        "Use Azure Functions for event processing",
+        "Deploy to Azure Kubernetes Service",
+        "Implement API Gateway (Azure API Management)",
+        "Use Azure Service Bus Premium for messaging",
+        "Add Azure SignalR Service for WebSocket",
+        "Implement comprehensive observability",
+        "Set up GitOps with Azure DevOps or GitHub Actions",
+        "Implement blue-green deployments"
+      ],
+      "pros": [
+        "Maximum cloud benefits",
+        "Best scalability and resilience",
+        "Modern DevOps practices",
+        "Service-level scaling",
+        "Technology flexibility"
+      ],
+      "cons": [
+        "Highest effort and cost",
+        "Complex architecture",
+        "Requires significant expertise",
+        "Longer time to production",
+        "Over-engineering for simple applications"
+      ]
+    }
+  ],
+  "estimatedMigrationCost": {
+    "liftAndShift": {
+      "developmentDays": 5,
+      "infrastructureMonthlyCost": "$150-250",
+      "migrationEffort": "low"
+    },
+    "modernizeAndMigrate": {
+      "developmentDays": 15,
+      "infrastructureMonthlyCost": "$150-300",
+      "migrationEffort": "medium"
+    },
+    "cloudNativeTransformation": {
+      "developmentDays": 35,
+      "infrastructureMonthlyCost": "$300-1000",
+      "migrationEffort": "high"
+    }
+  },
+  "nextSteps": [
+    "Review assessment findings with development team",
+    "Choose migration strategy based on business needs and timeline",
+    "Set up Azure subscription and resource groups",
+    "Create proof of concept with one migration path",
+    "Establish CI/CD pipeline",
+    "Plan phased migration approach",
+    "Set up monitoring and alerting",
+    "Document architecture and deployment process",
+    "Train team on Azure services and tools",
+    "Execute migration with validation at each step"
+  ]
+}
