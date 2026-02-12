@@ -23,7 +23,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "pending"
+      "status": "success",
+      "taskSummary": "Successfully upgraded Java from version 1.8 to 21 (LTS). Updated maven.compiler.source, maven.compiler.target, and maven-compiler-plugin version to 3.11.0 in both demo/pom.xml and democlient/pom.xml. Build and tests verified successfully.",
+      "successCriteriaStatus": {
+        "passBuild": "passed",
+        "generateNewUnitTests": "not_required",
+        "generateNewIntegrationTests": "not_required",
+        "passUnitTests": "passed",
+        "passIntegrationTests": "not_required",
+        "securityComplianceCheck": "not_required"
+      }
     },
     {
       "type": "upgrade",
