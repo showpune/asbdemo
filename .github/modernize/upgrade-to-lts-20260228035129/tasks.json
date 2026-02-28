@@ -23,7 +23,16 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "started"
+      "status": "success",
+      "taskSummary": "Successfully upgraded Java from 1.8 to 21 LTS. Updated maven.compiler.source/target to 21, upgraded Jetty 9 to 11 (Jakarta EE 9 namespace support), migrated javax.servlet.* and javax.websocket.* imports to jakarta.* in RabbitMQConsumer.java and NewsWebSocket.java, upgraded maven-compiler-plugin to 3.13.0 and surefire to 3.2.5. Build passes and unit tests pass.",
+      "successCriteriaStatus": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "generateNewIntegrationTests": "false",
+        "passUnitTests": "true",
+        "passIntegrationTests": "false",
+        "securityComplianceCheck": "false"
+      }
     },
     {
       "type": "upgrade",
@@ -48,7 +57,7 @@
         "passIntegrationTests": "false",
         "securityComplianceCheck": "false"
       },
-      "status": "pending"
+      "status": "started"
     }
   ],
   "metadata": {
