@@ -1,0 +1,615 @@
+{
+  "assessmentInfo": {
+    "toolVersion": "Manual Assessment 1.0",
+    "timestamp": "2026-02-11T06:55:00.000Z",
+    "analysisMode": "cloud-readiness",
+    "targets": [
+      "Azure",
+      "cloud-readiness"
+    ]
+  },
+  "repositoryInfo": {
+    "name": "asbdemo",
+    "owner": "showpune",
+    "url": "https://github.com/showpune/asbdemo",
+    "branch": "main",
+    "commitSha": "latest",
+    "analysisDate": "2026-02-11T06:55:00.000Z"
+  },
+  "summary": {
+    "totalApplications": 2,
+    "totalIssues": 12,
+    "criticalIssues": 0,
+    "highIssues": 4,
+    "mediumIssues": 5,
+    "lowIssues": 3,
+    "informationalIssues": 0,
+    "totalDependencies": 6,
+    "linesOfCode": 250
+  },
+  "applications": [
+    {
+      "name": "demo",
+      "path": "/demo",
+      "type": "Maven",
+      "language": "Java",
+      "framework": "JavaEE/Servlet",
+      "packaging": "WAR",
+      "javaVersion": "1.8",
+      "description": "RabbitMQ News Feed Demo Service - Consumes messages from RabbitMQ and broadcasts via WebSocket",
+      "entryPoints": [
+        "com.example.rabbitmq.RabbitMQConsumer",
+        "com.example.websocket.NewsWebSocket"
+      ],
+      "technologies": [
+        "RabbitMQ",
+        "WebSocket",
+        "Servlet API",
+        "Jetty",
+        "Maven"
+      ]
+    },
+    {
+      "name": "democlient",
+      "path": "/democlient",
+      "type": "Maven",
+      "language": "Java",
+      "framework": "Standalone Java Application",
+      "packaging": "JAR",
+      "javaVersion": "1.8",
+      "description": "RabbitMQ News Publisher Client - Publishes news messages to RabbitMQ queue",
+      "entryPoints": [
+        "com.example.App"
+      ],
+      "technologies": [
+        "RabbitMQ",
+        "Maven"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "com.rabbitmq:amqp-client",
+      "version": "5.16.0",
+      "ecosystem": "maven",
+      "scope": "compile",
+      "usedBy": [
+        "demo",
+        "democlient"
+      ],
+      "cloudReadiness": "compatible",
+      "notes": "RabbitMQ client library - compatible with Azure Service Bus or Azure Event Hubs"
+    },
+    {
+      "name": "javax.websocket:javax.websocket-api",
+      "version": "1.1",
+      "ecosystem": "maven",
+      "scope": "provided",
+      "usedBy": [
+        "demo"
+      ],
+      "cloudReadiness": "compatible",
+      "notes": "WebSocket API - supported in Azure App Service"
+    },
+    {
+      "name": "javax.servlet:javax.servlet-api",
+      "version": "3.1.0",
+      "ecosystem": "maven",
+      "scope": "provided",
+      "usedBy": [
+        "demo"
+      ],
+      "cloudReadiness": "compatible",
+      "notes": "Servlet API - fully supported in Azure App Service"
+    },
+    {
+      "name": "com.google.code.gson:gson",
+      "version": "2.8.9",
+      "ecosystem": "maven",
+      "scope": "compile",
+      "usedBy": [
+        "demo"
+      ],
+      "cloudReadiness": "compatible",
+      "notes": "JSON processing library - no cloud migration concerns"
+    },
+    {
+      "name": "junit:junit",
+      "version": "4.11",
+      "ecosystem": "maven",
+      "scope": "test",
+      "usedBy": [
+        "demo",
+        "democlient"
+      ],
+      "cloudReadiness": "compatible",
+      "notes": "Testing framework - no cloud migration concerns"
+    },
+    {
+      "name": "org.eclipse.jetty:jetty-maven-plugin",
+      "version": "9.4.48.v20220622",
+      "ecosystem": "maven",
+      "scope": "build",
+      "usedBy": [
+        "demo"
+      ],
+      "cloudReadiness": "needs-review",
+      "notes": "Jetty embedded server - can be replaced with Azure App Service runtime"
+    }
+  ],
+  "issues": [
+    {
+      "id": "config-001",
+      "category": "Configuration",
+      "severity": "high",
+      "title": "Hardcoded RabbitMQ Host Configuration",
+      "description": "RabbitMQ host is hardcoded as 'localhost' in the source code",
+      "affectedFiles": [
+        {
+          "path": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+          "line": 14,
+          "snippet": "private static final String RABBITMQ_HOST = \"localhost\";"
+        },
+        {
+          "path": "democlient/src/main/java/com/example/App.java",
+          "line": 17,
+          "snippet": "private static final String RABBITMQ_HOST = \"localhost\";"
+        }
+      ],
+      "recommendation": "Externalize configuration using environment variables or configuration files. Use Azure App Configuration or Key Vault for managing connection strings.",
+      "effort": "low",
+      "migrationImpact": "high",
+      "azureGuidance": "Use Azure App Configuration service to manage application settings across environments"
+    },
+    {
+      "id": "config-002",
+      "category": "Configuration",
+      "severity": "high",
+      "title": "Hardcoded Queue Name",
+      "description": "RabbitMQ queue name is hardcoded in the source code",
+      "affectedFiles": [
+        {
+          "path": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+          "line": 15,
+          "snippet": "private static final String QUEUE_NAME = \"news\";"
+        },
+        {
+          "path": "democlient/src/main/java/com/example/App.java",
+          "line": 18,
+          "snippet": "private static final String QUEUE_NAME = \"news\";"
+        }
+      ],
+      "recommendation": "Move queue name to external configuration to enable environment-specific values",
+      "effort": "low",
+      "migrationImpact": "medium",
+      "azureGuidance": "Configure queue/topic names through Azure App Configuration"
+    },
+    {
+      "id": "messaging-001",
+      "category": "Messaging",
+      "severity": "high",
+      "title": "RabbitMQ Dependency",
+      "description": "Application uses RabbitMQ for message queuing, which requires migration to Azure messaging services",
+      "affectedFiles": [
+        {
+          "path": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+          "line": 26,
+          "snippet": "ConnectionFactory factory = new ConnectionFactory();"
+        },
+        {
+          "path": "democlient/src/main/java/com/example/App.java",
+          "line": 25,
+          "snippet": "ConnectionFactory factory = new ConnectionFactory();"
+        }
+      ],
+      "recommendation": "Migrate to Azure Service Bus or Azure Event Hubs. Azure Service Bus provides RabbitMQ protocol support via AMQP.",
+      "effort": "medium",
+      "migrationImpact": "high",
+      "azureGuidance": "Azure Service Bus supports AMQP 1.0 protocol and can work with minimal code changes"
+    },
+    {
+      "id": "messaging-002",
+      "category": "Messaging",
+      "severity": "high",
+      "title": "Missing Connection Credentials Configuration",
+      "description": "RabbitMQ connection credentials are commented out and not properly configured",
+      "affectedFiles": [
+        {
+          "path": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+          "line": 29,
+          "snippet": "// factory.setUsername(\"guest\");"
+        },
+        {
+          "path": "democlient/src/main/java/com/example/App.java",
+          "line": 28,
+          "snippet": "// factory.setUsername(\"guest\");"
+        }
+      ],
+      "recommendation": "Implement proper authentication using Azure Key Vault for secure credential management",
+      "effort": "medium",
+      "migrationImpact": "high",
+      "azureGuidance": "Use Azure Key Vault to store connection strings and credentials securely"
+    },
+    {
+      "id": "runtime-001",
+      "category": "Runtime",
+      "severity": "medium",
+      "title": "Embedded Jetty Server",
+      "description": "Application uses embedded Jetty server for development, needs migration to Azure App Service",
+      "affectedFiles": [
+        {
+          "path": "demo/pom.xml",
+          "line": 98,
+          "snippet": "jetty-maven-plugin"
+        }
+      ],
+      "recommendation": "Deploy WAR file to Azure App Service (Tomcat runtime) or containerize the application",
+      "effort": "low",
+      "migrationImpact": "medium",
+      "azureGuidance": "Azure App Service supports WAR deployment with Tomcat runtime"
+    },
+    {
+      "id": "java-001",
+      "category": "Java Version",
+      "severity": "medium",
+      "title": "Java 8 (1.8) Usage",
+      "description": "Application uses Java 8 which is approaching end of support",
+      "affectedFiles": [
+        {
+          "path": "demo/pom.xml",
+          "line": 18,
+          "snippet": "<maven.compiler.source>1.8</maven.compiler.source>"
+        },
+        {
+          "path": "democlient/pom.xml",
+          "line": 17,
+          "snippet": "<maven.compiler.source>1.8</maven.compiler.source>"
+        }
+      ],
+      "recommendation": "Consider upgrading to Java 11 or Java 17 (LTS versions) for better long-term support",
+      "effort": "medium",
+      "migrationImpact": "low",
+      "azureGuidance": "Azure App Service supports Java 8, 11, and 17. Java 17 is recommended for new deployments"
+    },
+    {
+      "id": "websocket-001",
+      "category": "WebSocket",
+      "severity": "medium",
+      "title": "WebSocket Implementation",
+      "description": "Application uses WebSocket for real-time communication",
+      "affectedFiles": [
+        {
+          "path": "demo/src/main/java/com/example/websocket/NewsWebSocket.java",
+          "line": 10,
+          "snippet": "@ServerEndpoint(\"/news-websocket\")"
+        }
+      ],
+      "recommendation": "Verify WebSocket support in target Azure service. Azure App Service supports WebSocket.",
+      "effort": "low",
+      "migrationImpact": "low",
+      "azureGuidance": "Enable WebSocket support in Azure App Service configuration"
+    },
+    {
+      "id": "error-001",
+      "category": "Error Handling",
+      "severity": "medium",
+      "title": "Basic Error Handling",
+      "description": "Error handling relies on console output and stack traces",
+      "affectedFiles": [
+        {
+          "path": "demo/src/main/java/com/example/rabbitmq/RabbitMQConsumer.java",
+          "line": 63,
+          "snippet": "catch (IOException | TimeoutException e)"
+        }
+      ],
+      "recommendation": "Implement structured logging using Azure Application Insights for better observability",
+      "effort": "medium",
+      "migrationImpact": "low",
+      "azureGuidance": "Integrate Azure Application Insights for application monitoring and diagnostics"
+    },
+    {
+      "id": "dependency-001",
+      "category": "Dependencies",
+      "severity": "low",
+      "title": "Outdated Gson Version",
+      "description": "Using Gson 2.8.9, newer versions available",
+      "affectedFiles": [
+        {
+          "path": "demo/pom.xml",
+          "line": 57,
+          "snippet": "<version>2.8.9</version>"
+        }
+      ],
+      "recommendation": "Update to latest Gson version (2.10.1 or later) for bug fixes and improvements",
+      "effort": "low",
+      "migrationImpact": "low",
+      "azureGuidance": "No specific Azure guidance - standard dependency update"
+    },
+    {
+      "id": "dependency-002",
+      "category": "Dependencies",
+      "severity": "low",
+      "title": "Outdated JUnit Version",
+      "description": "Using JUnit 4.11, consider upgrading to JUnit 5",
+      "affectedFiles": [
+        {
+          "path": "demo/pom.xml",
+          "line": 25,
+          "snippet": "<version>4.11</version>"
+        }
+      ],
+      "recommendation": "Upgrade to JUnit 5 for better testing capabilities",
+      "effort": "low",
+      "migrationImpact": "low",
+      "azureGuidance": "No specific Azure guidance - standard dependency update"
+    },
+    {
+      "id": "monitoring-001",
+      "category": "Monitoring",
+      "severity": "low",
+      "title": "No Application Monitoring",
+      "description": "Application lacks integrated monitoring and telemetry",
+      "affectedFiles": [
+        {
+          "path": "demo/pom.xml",
+          "line": 1,
+          "snippet": "No Application Insights dependency"
+        }
+      ],
+      "recommendation": "Add Azure Application Insights SDK for comprehensive application monitoring",
+      "effort": "low",
+      "migrationImpact": "low",
+      "azureGuidance": "Integrate Application Insights Java agent for automatic telemetry collection"
+    },
+    {
+      "id": "container-001",
+      "category": "Containerization",
+      "severity": "low",
+      "title": "No Dockerfile Present",
+      "description": "Application lacks containerization artifacts",
+      "affectedFiles": [],
+      "recommendation": "Create Dockerfile for containerized deployment to Azure Container Apps or AKS",
+      "effort": "low",
+      "migrationImpact": "low",
+      "azureGuidance": "Use Azure Container Registry to store container images"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": 1,
+      "category": "Configuration Management",
+      "title": "Externalize Configuration",
+      "description": "Move all hardcoded configuration values to external configuration sources",
+      "benefits": [
+        "Enable environment-specific configurations",
+        "Improve security by separating secrets from code",
+        "Simplify deployment across different environments"
+      ],
+      "azureServices": [
+        "Azure App Configuration",
+        "Azure Key Vault"
+      ],
+      "estimatedEffort": "1-2 days"
+    },
+    {
+      "priority": 2,
+      "category": "Messaging Migration",
+      "title": "Migrate to Azure Service Bus",
+      "description": "Replace RabbitMQ with Azure Service Bus for cloud-native messaging",
+      "benefits": [
+        "Fully managed messaging service",
+        "Built-in high availability and disaster recovery",
+        "Native AMQP 1.0 protocol support",
+        "Integration with Azure ecosystem"
+      ],
+      "azureServices": [
+        "Azure Service Bus"
+      ],
+      "estimatedEffort": "3-5 days",
+      "alternativeOptions": [
+        {
+          "service": "Azure Event Hubs",
+          "description": "For high-throughput event streaming scenarios"
+        },
+        {
+          "service": "RabbitMQ on Azure VM",
+          "description": "Lift-and-shift approach with minimal code changes"
+        }
+      ]
+    },
+    {
+      "priority": 3,
+      "category": "Application Hosting",
+      "title": "Deploy to Azure App Service",
+      "description": "Host the web application on Azure App Service with Tomcat runtime",
+      "benefits": [
+        "Fully managed platform",
+        "Built-in scaling and load balancing",
+        "Easy deployment and CI/CD integration",
+        "WebSocket support included"
+      ],
+      "azureServices": [
+        "Azure App Service"
+      ],
+      "estimatedEffort": "1-2 days",
+      "alternativeOptions": [
+        {
+          "service": "Azure Container Apps",
+          "description": "For containerized microservices architecture"
+        },
+        {
+          "service": "Azure Kubernetes Service (AKS)",
+          "description": "For complex orchestration requirements"
+        }
+      ]
+    },
+    {
+      "priority": 4,
+      "category": "Monitoring and Observability",
+      "title": "Implement Application Insights",
+      "description": "Add comprehensive application monitoring and diagnostics",
+      "benefits": [
+        "Real-time application performance monitoring",
+        "Distributed tracing across components",
+        "Custom metrics and logging",
+        "Proactive alerting"
+      ],
+      "azureServices": [
+        "Azure Application Insights",
+        "Azure Monitor"
+      ],
+      "estimatedEffort": "1 day"
+    },
+    {
+      "priority": 5,
+      "category": "Security",
+      "title": "Implement Azure Key Vault Integration",
+      "description": "Store and manage sensitive configuration and credentials securely",
+      "benefits": [
+        "Centralized secrets management",
+        "Hardware security module (HSM) backed keys",
+        "Access policies and audit logging",
+        "Automatic secret rotation"
+      ],
+      "azureServices": [
+        "Azure Key Vault"
+      ],
+      "estimatedEffort": "1-2 days"
+    },
+    {
+      "priority": 6,
+      "category": "Java Runtime",
+      "title": "Upgrade to Java 17 LTS",
+      "description": "Modernize the Java runtime to the latest LTS version",
+      "benefits": [
+        "Long-term support until 2029",
+        "Performance improvements",
+        "Enhanced security features",
+        "Modern language features"
+      ],
+      "azureServices": [],
+      "estimatedEffort": "2-3 days"
+    }
+  ],
+  "azureServices": [
+    {
+      "name": "Azure App Service",
+      "purpose": "Host the web application (demo WAR file)",
+      "configuration": {
+        "runtime": "Tomcat 9 or 10",
+        "javaVersion": "Java 17",
+        "tier": "Standard S1 or higher for WebSocket support"
+      },
+      "estimatedMonthlyCost": "$70-150 USD (Standard S1)"
+    },
+    {
+      "name": "Azure Service Bus",
+      "purpose": "Replace RabbitMQ for message queuing",
+      "configuration": {
+        "tier": "Standard or Premium",
+        "protocol": "AMQP 1.0",
+        "features": "Queues and Topics"
+      },
+      "estimatedMonthlyCost": "$10-700 USD (Standard tier starting at $10)"
+    },
+    {
+      "name": "Azure App Configuration",
+      "purpose": "Centralized configuration management",
+      "configuration": {
+        "tier": "Standard",
+        "features": "Configuration management and feature flags"
+      },
+      "estimatedMonthlyCost": "$1-150 USD (Standard tier)"
+    },
+    {
+      "name": "Azure Key Vault",
+      "purpose": "Secure storage for connection strings and secrets",
+      "configuration": {
+        "tier": "Standard",
+        "features": "Secret management and access policies"
+      },
+      "estimatedMonthlyCost": "$0.03 per 10,000 operations"
+    },
+    {
+      "name": "Azure Application Insights",
+      "purpose": "Application performance monitoring and diagnostics",
+      "configuration": {
+        "tier": "Pay-as-you-go",
+        "features": "APM, distributed tracing, custom metrics"
+      },
+      "estimatedMonthlyCost": "$2-50 USD (based on data volume)"
+    },
+    {
+      "name": "Azure Container Registry",
+      "purpose": "(Optional) Store container images if using containerization",
+      "configuration": {
+        "tier": "Basic or Standard"
+      },
+      "estimatedMonthlyCost": "$5-20 USD (Basic tier)"
+    }
+  ],
+  "migrationStrategies": [
+    {
+      "approach": "Rehost (Lift and Shift)",
+      "description": "Minimal changes - deploy to Azure App Service with RabbitMQ on Azure VM",
+      "pros": [
+        "Fastest migration path",
+        "Minimal code changes",
+        "Quick time to market"
+      ],
+      "cons": [
+        "Not fully cloud-native",
+        "Manual RabbitMQ management required",
+        "Limited scalability benefits"
+      ],
+      "estimatedEffort": "1-2 weeks",
+      "complexity": "Low"
+    },
+    {
+      "approach": "Replatform",
+      "description": "Migrate to Azure App Service and Azure Service Bus with minimal refactoring",
+      "pros": [
+        "Leverage managed Azure services",
+        "Better scalability and availability",
+        "Reduced operational overhead",
+        "Native Azure integration"
+      ],
+      "cons": [
+        "Requires code changes for Service Bus integration",
+        "Testing and validation needed",
+        "Some learning curve"
+      ],
+      "estimatedEffort": "3-4 weeks",
+      "complexity": "Medium",
+      "recommended": true
+    },
+    {
+      "approach": "Refactor (Cloud-Native)",
+      "description": "Full modernization with microservices, containers, and Azure PaaS services",
+      "pros": [
+        "Optimal cloud-native architecture",
+        "Maximum scalability and resilience",
+        "Modern development practices",
+        "Best long-term maintainability"
+      ],
+      "cons": [
+        "Significant development effort",
+        "Longer time to market",
+        "Higher initial cost"
+      ],
+      "estimatedEffort": "6-8 weeks",
+      "complexity": "High"
+    }
+  ],
+  "nextSteps": [
+    "Review and prioritize migration issues",
+    "Set up Azure environment and resource groups",
+    "Externalize configuration to support multiple environments",
+    "Set up Azure DevOps or GitHub Actions for CI/CD",
+    "Implement Azure Service Bus integration",
+    "Deploy to Azure App Service staging environment",
+    "Perform comprehensive testing",
+    "Configure monitoring with Application Insights",
+    "Plan production cutover and rollback strategy"
+  ]
+}
